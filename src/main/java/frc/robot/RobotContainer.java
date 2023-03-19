@@ -4,22 +4,7 @@
 
 package frc.robot;
 
-import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.commands.TankDrive;
-import frc.robot.commands.ArmDrive;
-import frc.robot.commands.Drive2WJ;
-import frc.robot.commands.Drive3;
-import frc.robot.commands.DriveDistance;
-import frc.robot.commands.IntakeDrive;
-import frc.robot.commands.Turn;
-import frc.robot.commands.TurnPID;
-import frc.robot.commands.autonomous.*;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Intake;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
@@ -28,13 +13,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.InputStream;
-import java.net.*;
+import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.commands.ArmDrive;
+import frc.robot.commands.IntakeDrive;
+import frc.robot.commands.TankDrive;
+import frc.robot.commands.autonomous.AutoChargeMove;
+import frc.robot.commands.autonomous.AutoChargeOnly;
+import frc.robot.commands.autonomous.AutoMoveOnce;
+import frc.robot.commands.autonomous.AutoMoveOnly;
+import frc.robot.commands.autonomous.AutoNothing;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Intake;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -43,18 +35,8 @@ import java.net.*;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-    /* 
-    // The robot's subsystems and commands are defined here...
-    private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-
-    // Replace with CommandPS4Controller or CommandJoystick if needed
-    private final CommandXboxController m_driverController =
-        new CommandXboxController(OperatorConstants.kDriverControllerPort);*/
-
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     NetworkTable table = inst.getTable("SmartDashboard");
-    
-    // Propeller m_propeller;
 
     public final Drivetrain m_drivetrain = new Drivetrain();
     private final Arm m_arm = new Arm();
@@ -80,7 +62,6 @@ public class RobotContainer {
         m_chooser.setDefaultOption("Auto move both ways", new AutoMoveOnly(m_drivetrain));
         m_chooser.addOption("Auto charge only", new AutoChargeOnly(m_drivetrain));
         m_chooser.addOption("Auto charge move", new AutoChargeMove(m_drivetrain));
-        // m_chooser.setDefaultOption("Auto charge move", new AutoChargeMove(m_drivetrain));
         
         SmartDashboard.putData(m_chooser);
 
@@ -108,8 +89,6 @@ public class RobotContainer {
             } else if (m_xbox2.getRawButton(1)) {
                 // lower arm
                 return -ArmConstants.OUTPUT_POWER;
-            } else if (m_xbox2.getRawAxis(2) > 0.9 && m_xbox2.getRawButton(5)) {
-                return 0.9; // TODO: make safer later
             } else {
                 return 0;
             }
@@ -151,7 +130,6 @@ public class RobotContainer {
      * @return the left speed
      */
     public double getLeftSpeed() {
-        //double thrust = m_stick1.getY(); // forward-back
         double thrust = -m_xbox.getRawAxis(1);
         if(m_xbox.getPOV()==0){
             thrust = 0.2;
@@ -159,11 +137,9 @@ public class RobotContainer {
             thrust = -0.2;
         }
         double twist;
-        //if (m_stick1.getRawButton(DriveConstants.kStraightButton)) {
-            if (m_xbox.getLeftBumper()) {
+        if (m_xbox.getLeftBumper()) {
             twist = 0;
         } else {
-            //twist = m_stick1.getZ(); // twist
             twist = m_xbox.getRawAxis(4);
         }
         if(m_xbox.getPOV()==90){
@@ -171,9 +147,7 @@ public class RobotContainer {
         }else if(m_xbox.getPOV()==270){
             twist = -0.3;
         }
-
         
-        //double throttle = (-m_stick1.getThrottle() + 2) / 3; // throttle
         double throttle = 0.9;
 
         if(m_xbox.getRawButton(6)){
@@ -190,7 +164,6 @@ public class RobotContainer {
      * @return the right speed
      */
     public double getRightSpeed() {
-        //double thrust = m_stick1.getY(); // forward-back
         double thrust = -m_xbox.getRawAxis(1);
         if(m_xbox.getPOV()==0){
             thrust = 0.2;
@@ -198,11 +171,9 @@ public class RobotContainer {
             thrust = -0.2;
         }
         double twist;
-        //if (m_stick1.getRawButton(DriveConstants.kStraightButton)) {
-            if (m_xbox.getLeftBumper()) {
+        if (m_xbox.getLeftBumper()) {
             twist = 0;
         } else {
-            //twist = m_stick1.getZ(); // twist
             twist = m_xbox.getRawAxis(4);
         }
         if(m_xbox.getPOV()==90){
@@ -210,9 +181,7 @@ public class RobotContainer {
         }else if(m_xbox.getPOV()==270){
             twist = -0.2;
         }
-
         
-        //double throttle = (-m_stick1.getThrottle() + 2) / 3; // throttle
         double throttle = 0.9;
 
         if(m_xbox.getRawButton(6)){
