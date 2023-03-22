@@ -18,10 +18,12 @@ public class Drive3 extends CommandBase {
     private PDController pd = new PDController(kP, kD);
     
     private Drivetrain m_drivetrain;
+    private double m_offsetAngle;
 
     public Drive3(Joystick xbox, Drivetrain drivetrain) {
         m_xbox = xbox;
         m_drivetrain = drivetrain;
+        m_offsetAngle = 0;
 
         setName("Drive3");
         addRequirements(m_drivetrain);
@@ -34,7 +36,7 @@ public class Drive3 extends CommandBase {
     @Override
     public void execute() {
         if(m_xbox.getRawButton(5)&&m_xbox.getRawButton(6)){
-            m_drivetrain.m_navX.reset();
+            m_offsetAngle = m_drivetrain.m_navX.getAngle();
         }
 
         double speed = -0.7*m_xbox.getRawAxis(1);//Math.min(1, Math.hypot(m_xbox.getRawAxis(0), m_xbox.getRawAxis(1)));//filter.calculate(0.9*Math.min(1, m_xbox.getMagnitude()));//Math.hypot(x, y)
@@ -45,7 +47,8 @@ public class Drive3 extends CommandBase {
 
         double correction = 0;
 
-        correction = pd.calculate(angle, m_drivetrain.m_navX.getAngle()%360);
+        double gyroAngle = m_drivetrain.m_navX.getAngle() - m_offsetAngle;
+        correction = pd.calculate(angle, gyroAngle%360);
 
         if (Math.hypot(m_xbox.getRawAxis(4), m_xbox.getRawAxis(5)) < 0.1) {
             correction = 0;

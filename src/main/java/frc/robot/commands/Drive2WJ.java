@@ -19,9 +19,12 @@ public class Drive2WJ extends CommandBase {
 
     private Drivetrain m_drivetrain;
 
+    private double m_offsetAngle;
+
     public Drive2WJ(Joystick xbox, Drivetrain drivetrain) {
         m_xbox = xbox;
         m_drivetrain = drivetrain;
+        m_offsetAngle = 0;
 
         setName("Drive2WJ");
         addRequirements(m_drivetrain);
@@ -34,7 +37,7 @@ public class Drive2WJ extends CommandBase {
     @Override
     public void execute() {
         if(m_xbox.getRawButton(5)&&m_xbox.getRawButton(6)){
-            m_drivetrain.m_navX.reset();
+            m_offsetAngle = m_drivetrain.m_navX.getAngle();
         }
 
         double speed = 0.7*Math.max(Math.abs(m_xbox.getRawAxis(0)), Math.abs(m_xbox.getRawAxis(1)));//Math.min(1, Math.hypot(m_xbox.getRawAxis(0), m_xbox.getRawAxis(1)));//filter.calculate(0.9*Math.min(1, m_xbox.getMagnitude()));//Math.hypot(x, y)
@@ -48,7 +51,7 @@ public class Drive2WJ extends CommandBase {
 
         double correction = 0;
 
-        double heading = m_drivetrain.m_navX.getAngle()%360;
+        double heading = (m_drivetrain.m_navX.getAngle() - m_offsetAngle)%360;
 
         if(!m_xbox.getRawButton(1) && Math.abs(heading-angle)>90){
             speed*=-1;
