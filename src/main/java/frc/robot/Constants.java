@@ -4,6 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.numbers.N7;
+import edu.wpi.first.math.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -47,6 +52,34 @@ public final class Constants {
 
         public static final int CUBE_IN_BUTTON = 1;
         public static final int CONE_IN_BUTTON = 2;
+    }
+
+    // TODO: make these constants accurate (right now they're random values)
+    public static final class SimulationConstants {
+        // Gear ratio between the motor and the wheel; output over input
+        public static final double kGearRatio = 7.29;
+        // Moment of inertia of the drivetrain about its center; kg * m^2
+        public static final double kMomentOfInertia = 7.5;
+        // Mass of the drivebase; kg
+        public static final double kMass = 60.0;
+        // Radius of the wheels; m
+        public static final double kWheelRadius = Units.inchesToMeters(3);
+        // The distance between the left and right wheels; m
+        public static final double kTrackWidth = 0.7112;
+        // Standard deviation of measurements, to create noise
+        public static final double kXStdDev = 0.001;
+        public static final double kYStdDev = 0.001;
+        public static final double kHeadingStdDev = 0.001;
+        public static final double kLeftVelocityStdDev = 0.1;
+        public static final double kRightVelocityStdDev = 0.1;
+        public static final double kLeftDistanceStdDev = 0.005;
+        public static final double kRightDistanceStdDev = 0.005;
+        public static final Vector<N7> kStdDevs = VecBuilder.fill(
+            kXStdDev, kYStdDev, kHeadingStdDev, kLeftVelocityStdDev, kRightVelocityStdDev,
+            kLeftDistanceStdDev, kRightDistanceStdDev
+        );
+        // Encoder resolution
+        public static final int kEncoderResolution = 4096; // not sure if this is correct for our type of motors
     }
 
     public static final class GamePiece {

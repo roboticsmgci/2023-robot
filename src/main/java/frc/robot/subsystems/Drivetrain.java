@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import static frc.robot.Constants.SimulationConstants.*;
 
 public class Drivetrain extends SubsystemBase {
     public double angle = 0;
@@ -167,12 +168,12 @@ public class Drivetrain extends SubsystemBase {
     public void simInit() {
         m_driveSim = new DifferentialDrivetrainSim(
             DCMotor.getNEO(2),
-            7.29,
-            7.5,
-            60.0,
-            Units.inchesToMeters(3),
-            0.7112,
-            VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005)
+            kGearRatio,
+            kMomentOfInertia,
+            kMass,
+            kWheelRadius,
+            kTrackWidth,
+            kStdDevs
         );
 
         m_dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
@@ -187,8 +188,8 @@ public class Drivetrain extends SubsystemBase {
         // REVPhysicsSim.getInstance().addSparkMax(m_rightFollowMotor, DCMotor.getNEO(1));
         m_leftSimEncoder = new Encoder(0, 1);
         m_rightSimEncoder = new Encoder(2, 3);
-        m_leftSimEncoder.setDistancePerPulse(2 * Math.PI * Units.inchesToMeters(3) / 4096);
-        m_rightSimEncoder.setDistancePerPulse(2 * Math.PI * Units.inchesToMeters(3) / 4096);
+        m_leftSimEncoder.setDistancePerPulse(2 * Math.PI * kWheelRadius / kEncoderResolution);
+        m_rightSimEncoder.setDistancePerPulse(2 * Math.PI * kWheelRadius / kEncoderResolution);
         m_leftEncoderSim = new EncoderSim(m_leftSimEncoder);
         m_rightEncoderSim = new EncoderSim(m_rightSimEncoder);
     }
