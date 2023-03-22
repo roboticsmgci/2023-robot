@@ -33,7 +33,6 @@ public class Intake extends SubsystemBase {
      */
     public void setMotor(double percent, int amps) {
         m_motor.set(percent);
-        System.out.println(percent);
         // SmartDashboard.putNumber("intake power (%)", percent);
         // SmartDashboard.putNumber("intake motor current (amps)", m_motor.getOutputCurrent());
         // SmartDashboard.putNumber("intake motor temperature (C)", m_motor.getMotorTemperature());

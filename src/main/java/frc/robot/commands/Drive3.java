@@ -16,7 +16,7 @@ public class Drive3 extends CommandBase {
     private double kP = 0.004, kD = 0.000002;
     
     private PDController pd = new PDController(kP, kD);
-
+    
     private Drivetrain m_drivetrain;
 
     public Drive3(Joystick xbox, Drivetrain drivetrain) {
