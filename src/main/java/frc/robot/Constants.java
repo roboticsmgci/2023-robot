@@ -53,19 +53,18 @@ public final class Constants {
         public static final int CUBE_IN_BUTTON = 1;
         public static final int CONE_IN_BUTTON = 2;
     }
-
-    // TODO: make these constants accurate (right now they're random values)
+    
     public static final class SimulationConstants {
         // Gear ratio between the motor and the wheel; output over input
         public static final double kGearRatio = 12.7;
         // Moment of inertia of the drivetrain about its center; kg * m^2
-        public static final double kMomentOfInertia = 7;
+        public static final double kMomentOfInertia = 6.52; // estimated with a rectangular prism
         // Mass of the drivebase; kg
-        public static final double kMass = 54.431;
+        public static final double kMass = 54.431; // roughly 120 lbs
         // Radius of the wheels; m
         public static final double kWheelRadius = Units.inchesToMeters(3);
         // The distance between the left and right wheels; m
-        public static final double kTrackWidth = 0.7112;
+        public static final double kTrackWidth = 0.44; // measured with meter stick
         // Standard deviation of measurements, to create noise
         public static final double kXStdDev = 0.001;
         public static final double kYStdDev = 0.001;
