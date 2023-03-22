@@ -56,7 +56,7 @@ public final class Constants {
     
     public static final class SimulationConstants {
         // Gear ratio between the motor and the wheel; output over input
-        public static final double kGearRatio = 12.7;
+        public static final double kGearRatio = 8.45;
         // Moment of inertia of the drivetrain about its center; kg * m^2
         public static final double kMomentOfInertia = 6.52; // estimated with a rectangular prism
         // Mass of the drivebase; kg
