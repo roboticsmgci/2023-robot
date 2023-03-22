@@ -57,11 +57,11 @@ public final class Constants {
     // TODO: make these constants accurate (right now they're random values)
     public static final class SimulationConstants {
         // Gear ratio between the motor and the wheel; output over input
-        public static final double kGearRatio = 7.29;
+        public static final double kGearRatio = 12.7;
         // Moment of inertia of the drivetrain about its center; kg * m^2
-        public static final double kMomentOfInertia = 7.5;
+        public static final double kMomentOfInertia = 7;
         // Mass of the drivebase; kg
-        public static final double kMass = 60.0;
+        public static final double kMass = 54.431;
         // Radius of the wheels; m
         public static final double kWheelRadius = Units.inchesToMeters(3);
         // The distance between the left and right wheels; m

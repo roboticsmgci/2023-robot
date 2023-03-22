@@ -89,6 +89,8 @@ public class RobotContainer {
             } else if (m_xbox2.getRawButton(1)) {
                 // lower arm
                 return -ArmConstants.OUTPUT_POWER;
+            } else if (m_xbox2.getRawAxis(2) > 0.9 && m_xbox2.getRawButton(5)) {
+                return 0.9; // TODO: make safer later
             } else {
                 return 0;
             }
