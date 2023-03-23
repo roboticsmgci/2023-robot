@@ -50,11 +50,6 @@ public class Drivetrain extends SubsystemBase {
     public RelativeEncoder m_leftLeadEncoder = m_leftLeadMotor.getEncoder();
     public RelativeEncoder m_rightLeadEncoder = m_rightLeadMotor.getEncoder();
 
-    private SlewRateLimiter m_speedLimiter = new SlewRateLimiter(1);
-
-    private SlewRateLimiter m_brakeLimiter = new SlewRateLimiter(1.8);
-    private SlewRateLimiter m_turnLimiter = new SlewRateLimiter(1.8);
-
     // SIMULATION
     DifferentialDrivetrainSim m_driveSim;
 
@@ -96,6 +91,10 @@ public class Drivetrain extends SubsystemBase {
         m_leftLeadEncoder.setPositionConversionFactor(-0.058726117);
         m_rightLeadEncoder.setPositionConversionFactor(-0.058726117);
 
+        //for feedforward
+        m_leftLeadEncoder.setVelocityConversionFactor(-0.004119);
+        m_rightLeadEncoder.setPositionConversionFactor(-0.004119);
+
         m_pitchError = 0;
 
         setName("Drivetrain");
@@ -109,20 +108,6 @@ public class Drivetrain extends SubsystemBase {
      */
     public void drive(double left, double right) {
         m_robotDrive.tankDrive(left, right, false);
-    }
-
-    public void drive(double left, double right, boolean limit) {
-        drive2((left+right)/2, (left-right)/2, limit);
-    }
-
-    public void drive2(double speed, double turn, boolean limit) {
-        // if(limit){
-        //     speed = m_speedLimiter.calculate(speed);
-        // }else{
-        //     speed = m_brakeLimiter.calculate(speed);
-        // }
-        // turn = m_turnLimiter.calculate(turn);
-        drive(speed+turn, speed - turn);
     }
 
     /**

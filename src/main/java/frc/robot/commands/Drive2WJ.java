@@ -78,11 +78,11 @@ public class Drive2WJ extends CommandBase {
         }
         else if(Math.abs(correction)>0.55){
             speed*=Math.signum(correction);
-            m_drivetrain.drive2(0, speed, !brake);
+            //m_drivetrain.drive2(0, speed, !brake);
         }else if(brake){
-            m_drivetrain.drive2(0, correction+0.05*Math.signum(correction), false);
+            //m_drivetrain.drive2(0, correction+0.05*Math.signum(correction), false);
         }else{
-            m_drivetrain.drive2(speed, speed*correction, true);
+            //m_drivetrain.drive2(speed, speed*correction, true);
         }
     }
 

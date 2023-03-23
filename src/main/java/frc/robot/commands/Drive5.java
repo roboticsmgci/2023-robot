@@ -15,10 +15,10 @@ import frc.robot.subsystems.Drivetrain;
 public class Drive5 extends CommandBase {
     private GenericHID m_xbox;
 
-    private double kS=0, kV=0, kA=0;
+    private double kS=0, kV=10, kA=0;
     private SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(kS, kV, kA);
 
-    private double kP=0.01, kD=0;
+    private double kP=0.0, kD=0;
     private PIDController m_leftPID = new PIDController(kP, 0, kD);
     private PIDController m_rightPID = new PIDController(kP, 0, kD);
 
@@ -80,7 +80,8 @@ Drivetrain m_drivetrain;
         }
         if(Math.abs((heading-angle)%360)>50){
             speed*=Math.signum(correction);
-            m_drivetrain.drive2(0, speed);
+            l+=speed;
+            r-=speed;
         }else{
             double power = speed*(1+correction);
             if(power>1){
