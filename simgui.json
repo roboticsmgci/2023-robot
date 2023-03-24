@@ -1,35 +1,12 @@
 {
-  "HALProvider": {
-    "Other Devices": {
-      "SPARK MAX [2]": {
-        "header": {
-          "open": true
-        }
-      },
-      "window": {
-        "visible": false
-      }
-    }
-  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
-      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
-      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
-      "/LiveWindow/Ungrouped/navX-Sensor[2]": "Gyro",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/SendableChooser[0]": "String Chooser"
     },
     "windows": {
       "/SmartDashboard/Field": {
-        "Robot": {
-          "length": 0.9652000069618225,
-          "width": 0.7111999988555908
-        },
-        "height": 8.020000457763672,
-        "image": "C:\\Users\\lucas\\OneDrive\\Documents\\School\\2022-23 (Grade 11)\\Robotics\\2023-testbot-java\\ChargedUpField.png",
-        "width": 16.540000915527344,
         "window": {
           "visible": true
         }
@@ -37,17 +14,8 @@
     }
   },
   "NetworkTables": {
-    "Retained Values": {
-      "open": false
-    },
     "transitory": {
-      "Shuffleboard": {
-        "open": true
-      },
       "SmartDashboard": {
-        "SendableChooser[0]": {
-          "open": true
-        },
         "open": true
       }
     }

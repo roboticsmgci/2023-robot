@@ -58,7 +58,7 @@ public final class Constants {
         // Gear ratio between the motor and the wheel; output over input
         public static final double kGearRatio = 8.45;
         // Moment of inertia of the drivetrain about its center; kg * m^2
-        public static final double kMomentOfInertia = 6.52; // estimated with a rectangular prism
+        public static final double kMomentOfInertia = 2.52; // estimated with a rectangular prism
         // Mass of the drivebase; kg
         public static final double kMass = 54.431; // roughly 120 lbs
         // Radius of the wheels; m
@@ -78,7 +78,7 @@ public final class Constants {
             kLeftDistanceStdDev, kRightDistanceStdDev
         );
         // Encoder resolution
-        public static final int kEncoderResolution = 4096; // not sure if this is correct for our type of motors
+        public static final int kEncoderResolution = 1; // not sure if this is correct for our type of motors
     }
 
     public static final class GamePiece {

@@ -50,11 +50,6 @@ public class Drivetrain extends SubsystemBase {
     public RelativeEncoder m_leftLeadEncoder = m_leftLeadMotor.getEncoder();
     public RelativeEncoder m_rightLeadEncoder = m_rightLeadMotor.getEncoder();
 
-    private SlewRateLimiter m_speedLimiter = new SlewRateLimiter(1);
-
-    private SlewRateLimiter m_brakeLimiter = new SlewRateLimiter(1.8);
-    private SlewRateLimiter m_turnLimiter = new SlewRateLimiter(1.8);
-
     // SIMULATION
     DifferentialDrivetrainSim m_driveSim;
 
@@ -88,7 +83,7 @@ public class Drivetrain extends SubsystemBase {
         m_leftFollowMotor.follow(m_leftLeadMotor);
         m_rightFollowMotor.follow(m_rightLeadMotor);
 
-        m_robotDrive.setDeadband(0.06);
+        //m_robotDrive.setDeadband(0.05);
 
         // Set conversion ratios
         // m_leftLeadEncoder.setPositionConversionFactor(0.0443);
@@ -97,6 +92,10 @@ public class Drivetrain extends SubsystemBase {
         m_rightLeadEncoder.setPositionConversionFactor(-0.058726117);
         m_leftLeadEncoder.setVelocityConversionFactor(-0.004119);
         m_rightLeadEncoder.setVelocityConversionFactor(-0.004119);
+
+        //for feedforward
+        m_leftLeadEncoder.setVelocityConversionFactor(-0.004119);
+        m_rightLeadEncoder.setPositionConversionFactor(-0.004119);
 
         m_pitchError = 0;
 
@@ -113,18 +112,9 @@ public class Drivetrain extends SubsystemBase {
         m_robotDrive.tankDrive(left, right, false);
     }
 
-    public void drive(double left, double right, boolean limit) {
-        drive2((left+right)/2, (left-right)/2, limit);
-    }
-
-    public void drive2(double speed, double turn, boolean limit) {
-        // if(limit){
-        //     speed = m_speedLimiter.calculate(speed);
-        // }else{
-        //     speed = m_brakeLimiter.calculate(speed);
-        // }
-        // turn = m_turnLimiter.calculate(turn);
-        drive(speed+turn, speed - turn);
+    public void driveVoltage(double left, double right) {
+        m_leftLeadMotor.setVoltage(left);
+        m_rightLeadMotor.setVoltage(right);
     }
 
     public void driveSV(double leftVoltage, double rightVoltage) {
@@ -137,9 +127,9 @@ public class Drivetrain extends SubsystemBase {
      */
     public void log() {
         SmartDashboard.putNumber("Gyro", m_navX.getYaw());
-        SmartDashboard.putNumber("Angle", m_navX.getAngle());
+        SmartDashboard.putNumber("target Angle", angle);
         SmartDashboard.putNumber("Pitch", getPitch());
-        SmartDashboard.putNumber("r", m_navX.getPitch());
+
         // SmartDashboard.putNumber("target", angle);
         SmartDashboard.putNumber("l1", m_leftLeadEncoder.getPosition()); // encoders
         SmartDashboard.putNumber("l2", m_rightLeadEncoder.getPosition());

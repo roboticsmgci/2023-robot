@@ -68,11 +68,11 @@ public class Drive4 extends CommandBase {
         else if(m_xbox.getPOV()==270){
             m_drivetrain.drive(-0.12, 0.12);
         }else if(m_xbox.getRawAxis(2)>0.5&&m_xbox.getRawAxis(3)>0.5){
-            m_drivetrain.drive2(speed, correction, true);
+            //m_drivetrain.drive2(speed, correction, true);
            
         }
         else{
-            m_drivetrain.drive2(speed, 0.25*m_xbox.getRawAxis(4), true);
+            //m_drivetrain.drive2(speed, 0.25*m_xbox.getRawAxis(4), true);
         }
     }
 

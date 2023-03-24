@@ -70,7 +70,7 @@ public class Drive3 extends CommandBase {
            
         // }
         else{
-            m_drivetrain.drive2(speed, 0.4*m_xbox.getRawAxis(4), false);
+            //m_drivetrain.drive2(speed, 0.4*m_xbox.getRawAxis(4), false);
         }
     }
 
