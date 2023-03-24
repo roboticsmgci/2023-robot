@@ -83,7 +83,7 @@ public class Drivetrain extends SubsystemBase {
         m_leftFollowMotor.follow(m_leftLeadMotor);
         m_rightFollowMotor.follow(m_rightLeadMotor);
 
-        m_robotDrive.setDeadband(0.06);
+        //m_robotDrive.setDeadband(0.05);
 
         // Set conversion ratios
         // m_leftLeadEncoder.setPositionConversionFactor(0.0443);
@@ -110,14 +110,19 @@ public class Drivetrain extends SubsystemBase {
         m_robotDrive.tankDrive(left, right, false);
     }
 
+    public void driveVoltage(double left, double right) {
+        m_leftLeadMotor.setVoltage(left);
+        m_rightLeadMotor.setVoltage(right);
+    }
+
     /**
      * Logs information to the SmartDashboard.
      */
     public void log() {
         SmartDashboard.putNumber("Gyro", m_navX.getYaw());
-        SmartDashboard.putNumber("Angle", m_navX.getAngle());
+        SmartDashboard.putNumber("target Angle", angle);
         SmartDashboard.putNumber("Pitch", getPitch());
-        SmartDashboard.putNumber("r", m_navX.getPitch());
+
         // SmartDashboard.putNumber("target", angle);
         SmartDashboard.putNumber("l1", m_leftLeadEncoder.getPosition()); // encoders
         SmartDashboard.putNumber("l2", m_rightLeadEncoder.getPosition());

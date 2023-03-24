@@ -19,6 +19,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.ArmDrive;
 import frc.robot.commands.IntakeDrive;
 import frc.robot.commands.TankDrive;
+import frc.robot.commands.Drive5;
 import frc.robot.commands.autonomous.AutoChargeMove;
 import frc.robot.commands.autonomous.AutoChargeOnly;
 import frc.robot.commands.autonomous.AutoMoveOnce;
@@ -70,16 +71,17 @@ public class RobotContainer {
             // new Drive3(m_stick1, m_drivetrain)
             // new Drive4(m_stick1, m_drivetrain)
             //new Drive2WJ(m_stick1, m_drivetrain)
-            new TankDrive(
-                () -> {
-                    return getLeftSpeed();
-                },
-                () -> {                
-                    return getRightSpeed();
-                },
-                m_drivetrain
-            )
+            // new TankDrive(
+            //     () -> {
+            //         return getLeftSpeed();
+            //     },
+            //     () -> {                
+            //         return getRightSpeed();
+            //     },
+            //     m_drivetrain
+            // )
             // new TankDrive()
+            new Drive5(m_stick1, m_drivetrain)
         );
 
         m_arm.setDefaultCommand(new ArmDrive(() -> {
