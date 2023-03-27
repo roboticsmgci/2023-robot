@@ -90,6 +90,8 @@ public class Drivetrain extends SubsystemBase {
         // m_rightLeadEncoder.setPositionConversionFactor(0.0443);
         m_leftLeadEncoder.setPositionConversionFactor(-0.058726117);
         m_rightLeadEncoder.setPositionConversionFactor(-0.058726117);
+        m_leftLeadEncoder.setVelocityConversionFactor(-0.004119);
+        m_rightLeadEncoder.setVelocityConversionFactor(-0.004119);
 
         //for feedforward
         m_leftLeadEncoder.setVelocityConversionFactor(-0.004119);
@@ -113,6 +115,11 @@ public class Drivetrain extends SubsystemBase {
     public void driveVoltage(double left, double right) {
         m_leftLeadMotor.setVoltage(left);
         m_rightLeadMotor.setVoltage(right);
+    }
+
+    public void driveSV(double leftVoltage, double rightVoltage) {
+        m_leftLeadMotor.setVoltage(leftVoltage);
+        m_rightLeadMotor.setVoltage(rightVoltage);
     }
 
     /**
