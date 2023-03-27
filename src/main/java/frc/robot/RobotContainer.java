@@ -20,6 +20,8 @@ import frc.robot.commands.ArmDrive;
 import frc.robot.commands.IntakeDrive;
 import frc.robot.commands.TankDrive;
 import frc.robot.commands.Drive5;
+import frc.robot.commands.Drive5Sim;
+import frc.robot.commands.ADrive;
 import frc.robot.commands.autonomous.AutoChargeMove;
 import frc.robot.commands.autonomous.AutoChargeOnly;
 import frc.robot.commands.autonomous.AutoMoveOnce;
@@ -80,8 +82,8 @@ public class RobotContainer {
             //     },
             //     m_drivetrain
             // )
-            // new TankDrive()
-            new Drive5(m_stick1, m_drivetrain)
+            //new ADrive(m_stick1, m_drivetrain)
+            new Drive5Sim(m_stick1, m_drivetrain)
         );
 
         m_arm.setDefaultCommand(new ArmDrive(() -> {
