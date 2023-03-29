@@ -32,7 +32,7 @@ public final class Constants {
 
     public static final class ArmConstants {
         // How many amps the arm motor can use.
-        public static final int CURRENT_LIMIT_A = 20;
+        public static final int CURRENT_LIMIT_A = 75;
         // Percent output to run the arm up/down at
         public static final double OUTPUT_POWER = 0.1;
 
@@ -46,7 +46,7 @@ public final class Constants {
         // How many amps the intake can use while holding
         public static final int INTAKE_HOLD_CURRENT_LIMIT_A = 5;
         // Percent output for intaking
-        public static final double INTAKE_OUTPUT_POWER = 0.75;
+        public static final double INTAKE_OUTPUT_POWER = 0.8;
         // Percent output for holding
         public static final double INTAKE_HOLD_POWER = 0.035;
 
@@ -58,7 +58,7 @@ public final class Constants {
         // Gear ratio between the motor and the wheel; output over input
         public static final double kGearRatio = 8.45;
         // Moment of inertia of the drivetrain about its center; kg * m^2
-        public static final double kMomentOfInertia = 2.52; // estimated with a rectangular prism
+        public static final double kMomentOfInertia = 0.22; // estimated with a rectangular prism
         // Mass of the drivebase; kg
         public static final double kMass = 54.431; // roughly 120 lbs
         // Radius of the wheels; m
