@@ -17,19 +17,21 @@ import frc.robot.subsystems.Drivetrain;
 public class Drive5 extends CommandBase {
     private GenericHID m_xbox;
 
-    private double kS=0, kV=1, kA=0;
+    private double kS=0.22, kV=2.91, kA=0;
     private SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(kS, kV, kA);
 
-    private double kP=0.01, kD=0;
-    private PIDController m_leftPID = new PIDController(kP, 0, kD);
-    private PIDController m_rightPID = new PIDController(kP, 0, kD);
+    private double kP=0, kI=0, kD=0;
+    private PIDController m_leftPID = new PIDController(kP, kI, kD);
+    private PIDController m_rightPID = new PIDController(kP, kI, kD);
 
-    private double kPg=0.008, kDg=0.000002;
-    private PIDController m_gyroPID = new PIDController(kPg, 0, kDg);
+    private double kPg=0.008, kIg=0, kDg=0.000002;
+    private PIDController m_gyroPID = new PIDController(kPg, kIg, kDg);
 
     //private SlewRateLimiter m_speedLimiter = new SlewRateLimiter(1.5);
 
     private double x1error, y1error, x2error, gerror;
+    private double lastEncoderValue;
+    private boolean isStill;
     
 Drivetrain m_drivetrain;
 
@@ -48,11 +50,47 @@ Drivetrain m_drivetrain;
         x1error = m_xbox.getRawAxis(0);
         y1error = m_xbox.getRawAxis(1);
         x2error = m_xbox.getRawAxis(4);
+        // SmartDashboard.putNumber("kS", kS);
+        // SmartDashboard.putNumber("kV", kV);
+        // SmartDashboard.putNumber("kA", kA);
+        // SmartDashboard.putNumber("kP", kP);
+        // SmartDashboard.putNumber("kI", kI);
+        // SmartDashboard.putNumber("kD", kD);
+        // SmartDashboard.putNumber("kPg", kPg);
+        // SmartDashboard.putNumber("kIg", kIg);
+        // SmartDashboard.putNumber("kDg", kD);
         gerror = m_drivetrain.m_navX.getAngle();
+        lastEncoderValue = m_drivetrain.m_leftLeadEncoder.getPosition();
+        isStill = false;
     }
 
     @Override
     public void execute() {
+        // SmartDashboard.putBoolean("isStill", isStill);
+
+        // double newKS = SmartDashboard.getNumber("kS", 0);
+        // double newKV = SmartDashboard.getNumber("kV", 0);
+        // double newKA = SmartDashboard.getNumber("kA", 0);
+
+        // kP = SmartDashboard.getNumber("kP", 0);
+        // kI = SmartDashboard.getNumber("kI", 0);
+        // kD = SmartDashboard.getNumber("kD", 0);
+        // m_leftPID.setPID(kP, kI, kD);
+        // m_rightPID.setPID(kP, kI, kD);
+
+        // kPg = SmartDashboard.getNumber("kPg", 0);
+        // kIg = SmartDashboard.getNumber("kIg", 0);
+        // kDg = SmartDashboard.getNumber("kDg", 0);
+        // m_gyroPID.setPID(kPg, kIg, kDg);
+
+        // if (newKS != kS || newKV != kV || newKA != kA) {
+        //     kS = newKS;
+        //     kV = newKV;
+        //     kA = newKA;
+
+        //     m_feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+        // }
+
         if(m_xbox.getRawButton(5)&&m_xbox.getRawButton(6)){
             gerror = m_drivetrain.m_navX.getAngle();
         }
@@ -132,8 +170,26 @@ Drivetrain m_drivetrain;
             correction/=power;
         }
 
-        m_drivetrain.drive(m_feedforward.calculate(l)+m_leftPID.calculate(m_drivetrain.m_leftLeadEncoder.getVelocity(), l), 
-            m_feedforward.calculate(r)+m_rightPID.calculate(m_drivetrain.m_rightLeadEncoder.getVelocity(), r));
+        double currentEncoderValue = m_drivetrain.m_leftLeadEncoder.getPosition();
+
+        double m_ffCalcL = m_feedforward.calculate(l);
+        double m_ffCalcR = m_feedforward.calculate(r);
+        SmartDashboard.putNumber("Left Feedforward", m_ffCalcL);
+        SmartDashboard.putNumber("Right Feedforward", m_ffCalcR);
+        SmartDashboard.putNumber("Left Motor", m_drivetrain.m_leftLeadMotor.get());
+        SmartDashboard.putNumber("Right Motor", m_drivetrain.m_leftLeadMotor.get());
+
+        if (Math.abs(currentEncoderValue - lastEncoderValue) >= 0.01 && isStill) {
+            SmartDashboard.putNumber("Speed Required", m_drivetrain.m_leftLeadMotor.get());
+            isStill = false;
+        } else if (Math.abs(currentEncoderValue - lastEncoderValue) < 0.01) {
+            isStill = true;
+        }
+
+        m_drivetrain.driveVoltage(m_ffCalcL+m_leftPID.calculate(m_drivetrain.m_leftLeadEncoder.getVelocity(), l), 
+            m_ffCalcR+m_rightPID.calculate(m_drivetrain.m_rightLeadEncoder.getVelocity(), r));
+        
+        lastEncoderValue = m_drivetrain.m_leftLeadEncoder.getPosition();
     }
 
     private double getAxis(int axis, double error){

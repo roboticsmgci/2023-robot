@@ -32,13 +32,13 @@ import static frc.robot.Constants.SimulationConstants.*;
 public class Drivetrain extends SubsystemBase {
     public double angle = 0;
 
-    private final CANSparkMax m_leftLeadMotor = new CANSparkMax(DriveConstants.kLeftLeadDeviceID,
+    public final CANSparkMax m_leftLeadMotor = new CANSparkMax(DriveConstants.kLeftLeadDeviceID,
                                                                 MotorType.kBrushless);
-    private final CANSparkMax m_rightLeadMotor = new CANSparkMax(DriveConstants.kRightLeadDeviceID,
+    public final CANSparkMax m_rightLeadMotor = new CANSparkMax(DriveConstants.kRightLeadDeviceID,
                                                                  MotorType.kBrushless);
-    private final CANSparkMax m_leftFollowMotor = new CANSparkMax(DriveConstants.kLeftFollowDeviceID,
+    public final CANSparkMax m_leftFollowMotor = new CANSparkMax(DriveConstants.kLeftFollowDeviceID,
                                                                   MotorType.kBrushless);
-    private final CANSparkMax m_rightFollowMotor = new CANSparkMax(DriveConstants.kRightFollowDeviceID,
+    public final CANSparkMax m_rightFollowMotor = new CANSparkMax(DriveConstants.kRightFollowDeviceID,
                                                                    MotorType.kBrushless);
     
     private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftLeadMotor, m_rightLeadMotor);
@@ -113,6 +113,8 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void driveVoltage(double left, double right) {
+        SmartDashboard.putNumber("Left Voltage", left);
+        SmartDashboard.putNumber("Right Voltage", right);
         m_leftLeadMotor.setVoltage(left);
         m_rightLeadMotor.setVoltage(right);
     }

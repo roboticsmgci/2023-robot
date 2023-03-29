@@ -46,7 +46,7 @@ public final class Constants {
         // How many amps the intake can use while holding
         public static final int INTAKE_HOLD_CURRENT_LIMIT_A = 5;
         // Percent output for intaking
-        public static final double INTAKE_OUTPUT_POWER = 0.5;
+        public static final double INTAKE_OUTPUT_POWER = 0.75;
         // Percent output for holding
         public static final double INTAKE_HOLD_POWER = 0.035;
 
