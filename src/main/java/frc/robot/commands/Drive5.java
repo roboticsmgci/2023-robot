@@ -30,6 +30,8 @@ public class Drive5 extends CommandBase {
     
 
     private double x1error, y1error, x2error, gerror;
+    private double lastEncoderValue;
+    private boolean isStill;
     
     Drivetrain m_drivetrain;
 
@@ -48,11 +50,47 @@ public class Drive5 extends CommandBase {
         x1error = m_xbox.getRawAxis(0);
         y1error = m_xbox.getRawAxis(1);
         x2error = m_xbox.getRawAxis(4);
+        // SmartDashboard.putNumber("kS", kS);
+        // SmartDashboard.putNumber("kV", kV);
+        // SmartDashboard.putNumber("kA", kA);
+        // SmartDashboard.putNumber("kP", kP);
+        // SmartDashboard.putNumber("kI", kI);
+        // SmartDashboard.putNumber("kD", kD);
+        // SmartDashboard.putNumber("kPg", kPg);
+        // SmartDashboard.putNumber("kIg", kIg);
+        // SmartDashboard.putNumber("kDg", kD);
         gerror = m_drivetrain.m_navX.getAngle();
+        lastEncoderValue = m_drivetrain.m_leftLeadEncoder.getPosition();
+        isStill = false;
     }
 
     @Override
     public void execute() {
+        // SmartDashboard.putBoolean("isStill", isStill);
+
+        // double newKS = SmartDashboard.getNumber("kS", 0);
+        // double newKV = SmartDashboard.getNumber("kV", 0);
+        // double newKA = SmartDashboard.getNumber("kA", 0);
+
+        // kP = SmartDashboard.getNumber("kP", 0);
+        // kI = SmartDashboard.getNumber("kI", 0);
+        // kD = SmartDashboard.getNumber("kD", 0);
+        // m_leftPID.setPID(kP, kI, kD);
+        // m_rightPID.setPID(kP, kI, kD);
+
+        // kPg = SmartDashboard.getNumber("kPg", 0);
+        // kIg = SmartDashboard.getNumber("kIg", 0);
+        // kDg = SmartDashboard.getNumber("kDg", 0);
+        // m_gyroPID.setPID(kPg, kIg, kDg);
+
+        // if (newKS != kS || newKV != kV || newKA != kA) {
+        //     kS = newKS;
+        //     kV = newKV;
+        //     kA = newKA;
+
+        //     m_feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+        // }
+
         if(m_xbox.getRawButton(5)&&m_xbox.getRawButton(6)){
             gerror = m_drivetrain.m_navX.getAngle();
         }

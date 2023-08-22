@@ -7,9 +7,9 @@
     },
     "windows": {
       "/SmartDashboard/Field": {
-        "height": 16.540000915527344,
-        "image": "C:\\William\\FRC\\2023-robot\\2023-robot\\ChargedUpField.png",
-        "width": 8.020000457763672,
+        "height": 8.020000457763672,
+        "image": "ChargedUpField.png",
+        "width": 16.540000915527344,
         "window": {
           "visible": true
         }
