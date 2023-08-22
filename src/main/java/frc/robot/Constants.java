@@ -8,6 +8,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N7;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -28,13 +29,26 @@ public final class Constants {
 
         public static final int kStraightButton = 1;
         public static final int kTurnButton = 2;
+
+        // Meters
+        public static final double kTrackwidth = 0.69;
+        public static final DifferentialDriveKinematics kKinematics =
+            new DifferentialDriveKinematics(kTrackwidth);
+
+        // Meters, seconds
+        public static final double ks = 0.22;
+        public static final double kv = 1.98;
+        public static final double ka = 0.2;
+
+        // Example value only - as above, this must be tuned for your drive!
+        public static final double kPDriveVel = 8.5;
     }
 
     public static final class ArmConstants {
         // How many amps the arm motor can use.
         public static final int CURRENT_LIMIT_A = 75;
         // Percent output to run the arm up/down at
-        public static final double OUTPUT_POWER = 0.1;
+        public static final double OUTPUT_POWER = 0.3;
 
         public static final int EXTEND_BUTTON = 7;
         public static final int RETRACT_BUTTON = 8;
@@ -58,7 +72,7 @@ public final class Constants {
         // Gear ratio between the motor and the wheel; output over input
         public static final double kGearRatio = 8.45;
         // Moment of inertia of the drivetrain about its center; kg * m^2
-        public static final double kMomentOfInertia = 0.22; // estimated with a rectangular prism
+        public static final double kMomentOfInertia = 0.82; // estimated with a rectangular prism
         // Mass of the drivebase; kg
         public static final double kMass = 54.431; // roughly 120 lbs
         // Radius of the wheels; m

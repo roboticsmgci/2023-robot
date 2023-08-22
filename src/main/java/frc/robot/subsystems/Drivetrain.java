@@ -11,9 +11,12 @@ import edu.wpi.first.hal.SimDevice;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -27,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import edu.wpi.first.math.controller.PIDController;
 import static frc.robot.Constants.SimulationConstants.*;
 
 public class Drivetrain extends SubsystemBase {
@@ -42,13 +46,27 @@ public class Drivetrain extends SubsystemBase {
                                                                    MotorType.kBrushless);
     
     private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftLeadMotor, m_rightLeadMotor);
-    private double m_pitchError;
+    private double m_pitchError, m_yawError;
     // Gyro
     public AHRS m_navX = new AHRS(SerialPort.Port.kUSB1);
 
     // Encoders
     public RelativeEncoder m_leftLeadEncoder = m_leftLeadMotor.getEncoder();
     public RelativeEncoder m_rightLeadEncoder = m_rightLeadMotor.getEncoder();
+
+    public Pose2d m_pose = new Pose2d();
+
+    private double kS=0.22, kV=3, kA=0;
+    public SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+
+    private double kP=0.0001, kD=0;
+    public PIDController m_leftPID = new PIDController(kP, 0, kD);
+    public PIDController m_rightPID = new PIDController(kP, 0, kD);
+
+    private double kPg=0.018, kDg=0.000002;
+    public PIDController m_gyroPID = new PIDController(kPg, 0, kDg);
+
+    public DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackWidth);
 
     // SIMULATION
     DifferentialDrivetrainSim m_driveSim;
@@ -62,6 +80,7 @@ public class Drivetrain extends SubsystemBase {
     EncoderSim m_rightEncoderSim;
 
     Field2d m_field = new Field2d();
+
     DifferentialDriveOdometry m_odometry = new DifferentialDriveOdometry(
         m_navX.getRotation2d(),
         m_leftLeadEncoder.getPosition(), m_rightLeadEncoder.getPosition()
@@ -86,18 +105,17 @@ public class Drivetrain extends SubsystemBase {
         //m_robotDrive.setDeadband(0.05);
 
         // Set conversion ratios
-        // m_leftLeadEncoder.setPositionConversionFactor(0.0443);
-        // m_rightLeadEncoder.setPositionConversionFactor(0.0443);
         m_leftLeadEncoder.setPositionConversionFactor(-0.058726117);
         m_rightLeadEncoder.setPositionConversionFactor(-0.058726117);
-        m_leftLeadEncoder.setVelocityConversionFactor(-0.004119);
-        m_rightLeadEncoder.setVelocityConversionFactor(-0.004119);
 
         //for feedforward
         m_leftLeadEncoder.setVelocityConversionFactor(-0.004119);
         m_rightLeadEncoder.setPositionConversionFactor(-0.004119);
 
         m_pitchError = 0;
+        m_yawError = 0;
+
+        m_gyroPID.enableContinuousInput(-180, 180);
 
         setName("Drivetrain");
     }
@@ -112,16 +130,12 @@ public class Drivetrain extends SubsystemBase {
         m_robotDrive.tankDrive(left, right, false);
     }
 
-    public void driveVoltage(double left, double right) {
-        SmartDashboard.putNumber("Left Voltage", left);
-        SmartDashboard.putNumber("Right Voltage", right);
-        m_leftLeadMotor.setVoltage(left);
-        m_rightLeadMotor.setVoltage(right);
-    }
+    public void driveVoltage(double l, double r) {
+        l=m_feedforward.calculate(l)+m_leftPID.calculate(m_leftLeadEncoder.getVelocity(), l);
+        r=m_feedforward.calculate(r)+m_rightPID.calculate(m_rightLeadEncoder.getVelocity(), r);
 
-    public void driveSV(double leftVoltage, double rightVoltage) {
-        m_leftLeadMotor.setVoltage(leftVoltage);
-        m_rightLeadMotor.setVoltage(rightVoltage);
+        m_leftLeadMotor.setVoltage(l);
+        m_rightLeadMotor.setVoltage(r);
     }
 
     /**
@@ -144,6 +158,8 @@ public class Drivetrain extends SubsystemBase {
                     m_leftLeadEncoder.getPosition(),
                     m_rightLeadEncoder.getPosition());
         m_field.setRobotPose(m_odometry.getPoseMeters());
+
+        m_pose = m_odometry.getPoseMeters();
         // System.out.print(m_odometry.getPoseMeters().getX());
         // System.out.print(", ");
         // System.out.println(m_odometry.getPoseMeters().getY());
@@ -151,10 +167,11 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public double getPitch(){
-        if(m_pitchError==0){
-            m_pitchError = m_navX.getPitch();
-        }
         return -(m_navX.getPitch()-m_pitchError);
+    }
+
+    public double getAngle(){
+        return m_pose.getRotation().getDegrees();
     }
 
     public void setBrakes(IdleMode idleMode) {

@@ -5,6 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
@@ -14,19 +18,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.ArmDrive;
+import frc.robot.commands.ArmDrive1;
 import frc.robot.commands.IntakeDrive;
 import frc.robot.commands.TankDrive;
 import frc.robot.commands.Drive5;
 import frc.robot.commands.Drive5Sim;
 import frc.robot.commands.ADrive;
-import frc.robot.commands.autonomous.AutoChargeMove;
-import frc.robot.commands.autonomous.AutoChargeOnly;
-import frc.robot.commands.autonomous.AutoMoveOnce;
-import frc.robot.commands.autonomous.AutoMoveOnly;
-import frc.robot.commands.autonomous.AutoNothing;
+import frc.robot.commands.autonomous.*;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
@@ -49,10 +53,14 @@ public class RobotContainer {
     XboxController m_xbox = new XboxController(0);
     XboxController m_xbox2 = new XboxController(1);
 
+    Compressor pcmCompressor = new Compressor(9, PneumaticsModuleType.CTREPCM);
+
     private final SendableChooser<Command> m_chooser = new SendableChooser<>();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer(){
+        // pcmCompressor.enableDigital();        
+
         inst.startServer();
 
         // Configure the trigger bindings
@@ -63,43 +71,25 @@ public class RobotContainer {
         m_chooser.addOption("Auto nothing", new AutoNothing(m_drivetrain));
         m_chooser.addOption("Auto only move forward", new AutoMoveOnce(m_drivetrain));
         m_chooser.setDefaultOption("Auto move both ways", new AutoMoveOnly(m_drivetrain));
-        m_chooser.addOption("Auto charge only", new AutoChargeOnly(m_drivetrain));
+        m_chooser.addOption("Auto sus charge", new SusChargeBack(m_drivetrain, m_arm));
+        m_chooser.addOption("Auto cube mid back", new AutoMoveCubeM(m_drivetrain, m_arm, m_intake));
+        m_chooser.addOption("Auto cube mid back better", new AutoMoveCubeMPID(m_drivetrain, m_arm, m_intake));
+        m_chooser.addOption("Auto cube mid only", new AutoScore(2, false, m_arm, m_intake));
+        m_chooser.addOption("Auto cone mid back", new AutoMoveConeM(m_drivetrain, m_arm, m_intake));
+        m_chooser.addOption("Auto charge forwards", new AutoChargeOnly(m_drivetrain));
+        m_chooser.addOption("Auto charge backwards", new AutoChargeBack(m_drivetrain, m_arm));
         m_chooser.addOption("Auto charge move", new AutoChargeMove(m_drivetrain));
         
         SmartDashboard.putData(m_chooser);
 
         m_drivetrain.setDefaultCommand(
-            // new TankDrive(() -> 0, () -> 0, m_drivetrain)
-            // new Drive3(m_stick1, m_drivetrain)
-            // new Drive4(m_stick1, m_drivetrain)
-            //new Drive2WJ(m_stick1, m_drivetrain)
-            // new TankDrive(
-            //     () -> {
-            //         return getLeftSpeed();
-            //     },
-            //     () -> {                
-            //         return getRightSpeed();
-            //     },
-            //     m_drivetrain
-            // )
             //new ADrive(m_stick1, m_drivetrain)
-            new Drive5Sim(m_stick1, m_drivetrain)
+            new Drive5(m_stick1, m_drivetrain)
         );
 
-        m_arm.setDefaultCommand(new ArmDrive(() -> {
-            if (m_xbox2.getRawButton(4)) {
-                // raise arm
-                return ArmConstants.OUTPUT_POWER;
-            } else if (m_xbox2.getRawButton(1)) {
-                // lower arm
-                return -ArmConstants.OUTPUT_POWER;
-            } else if (m_xbox2.getRawAxis(2) > 0.9 && m_xbox2.getRawButton(5)) {
-                return 0.9; // TODO: make safer later
-            } else {
-                return 0;
-            }
-            // return 1;
-        }, m_arm));
+        m_arm.setDefaultCommand(
+            new ArmDrive1(m_xbox2, m_arm)
+        );
         // m_arm.setDefaultCommand(new ArmDrive(() -> 0.05, m_arm));
 
         m_intake.setDefaultCommand(new IntakeDrive(
@@ -235,7 +225,58 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An example command will be run in autonomous
-        return m_chooser.getSelected();
+        // var autoVoltageConstraint =
+        // new DifferentialDriveVoltageConstraint(
+        //     m_drivetrain.m_feedforward,
+        //     m_drivetrain.kDriveKinematics,
+        //     10);
+
+        // // Create config for trajectory
+        // TrajectoryConfig config =
+        //     new TrajectoryConfig(
+        //             3,
+        //             3)
+        //         // Add kinematics to ensure max speed is actually obeyed
+        //         .setKinematics(m_drivetrain.kDriveKinematics)
+        //         // Apply the voltage constraint
+        //         .addConstraint(autoVoltageConstraint);
+
+        // // An example trajectory to follow.  All units in meters.
+        // Trajectory exampleTrajectory =
+        //     TrajectoryGenerator.generateTrajectory(
+        //         // Start at the origin facing the +X direction
+        //         new Pose2d(0, 0, new Rotation2d(0)),
+        //         // Pass through these two interior waypoints, making an 's' curve path
+        //         List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+        //         // End 3 meters straight ahead of where we started, facing forward
+        //         new Pose2d(3, 0, new Rotation2d(0)),
+        //         // Pass config
+        //         config);
+
+        // RamseteCommand ramseteCommand =
+        //     new RamseteCommand(
+        //         exampleTrajectory,
+        //         m_robotDrive::getPose,
+        //         new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
+        //         new SimpleMotorFeedforward(
+        //             DriveConstants.ksVolts,
+        //             DriveConstants.kvVoltSecondsPerMeter,
+        //             DriveConstants.kaVoltSecondsSquaredPerMeter),
+        //         DriveConstants.kDriveKinematics,
+        //         m_robotDrive::getWheelSpeeds,
+        //         new PIDController(DriveConstants.kPDriveVel, 0, 0),
+        //         new PIDController(DriveConstants.kPDriveVel, 0, 0),
+        //         // RamseteCommand passes volts to the callback
+        //         m_robotDrive::tankDriveVolts,
+        //         m_robotDrive);
+
+        // // Reset odometry to the starting pose of the trajectory.
+        // m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+
+        // // Run path following command, then stop at the end.
+        // return ramseteCommand.andThen(() -> m_robotDrive.tankDriveVolts(0, 0));
+        // // An example command will be run in autonomous
+        // //return m_chooser.getSelected();
+        return null;
     }
 }

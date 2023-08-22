@@ -113,7 +113,7 @@ Drivetrain m_drivetrain;
 
         if(Math.abs(speed)>0.05){
             if(difference>followRange){
-                v+=speed*Math.cos(difference);
+                v+=speed*Math.cos(Math.toRadians(difference));
                 omega+=correction;
             }else{
                 v+=speed;
@@ -137,10 +137,10 @@ Drivetrain m_drivetrain;
         if(power>1){
             v/=power;
             omega/=power;
-        }
+        } 
 
-        double l = 1.5*(v+omega);
-        double r = 1.5*(v-omega);
+        double l = 1.0*(v+omega);
+        double r = 1.0*(v-omega);
 
         m_drivetrain.drive(m_feedforward.calculate(l)+m_leftPID.calculate(m_drivetrain.m_leftLeadEncoder.getVelocity(), l), 
             m_feedforward.calculate(r)+m_rightPID.calculate(m_drivetrain.m_rightLeadEncoder.getVelocity(), r));

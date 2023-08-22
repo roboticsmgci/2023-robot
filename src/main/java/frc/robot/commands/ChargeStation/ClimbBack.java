@@ -3,42 +3,31 @@ package frc.robot.commands.ChargeStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 
-public class Balance extends CommandBase {
+public class ClimbBack extends CommandBase {
    
     private final Drivetrain m_drivetrain;
-    private double m_pitch, m_lastPitch;
 
-    public Balance(Drivetrain drivetrain) {
+    public ClimbBack(Drivetrain drivetrain) {
        
         m_drivetrain = drivetrain;
-        m_pitch = 5;
-        m_lastPitch = 5;
         
-        setName("Balance");
+        setName("ClimbBack");
         addRequirements(m_drivetrain);
     }
 
     @Override
     public void initialize() {
-        m_pitch = m_drivetrain.getPitch();
-        m_lastPitch = m_drivetrain.getPitch();
         m_drivetrain.drive(0, 0);
     }
 
     @Override
     public void execute() {
-        m_pitch = m_drivetrain.getPitch();
-        if(m_lastPitch-m_pitch>0.5){
-            m_drivetrain.drive((-0.1-m_pitch*0.01)/2, (-0.1-m_pitch*0.01)/2);
-        }else{
-            m_drivetrain.drive(0.3, 0.3);
-        }
-        m_lastPitch = m_pitch;
+        m_drivetrain.drive(-0.4, -0.4);
     }
 
     @Override
     public boolean isFinished() {
-        return m_pitch<3;
+        return m_drivetrain.getPitch()<-6;
     }
   
     // Called once after isFinished returns true

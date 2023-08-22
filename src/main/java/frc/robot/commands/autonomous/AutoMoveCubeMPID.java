@@ -1,21 +1,21 @@
 package frc.robot.commands.autonomous;
 
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+
 import frc.robot.commands.DriveDistance;
 import frc.robot.commands.DriveTime;
 import frc.robot.commands.Turn;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.*;
 
-public class AutoMoveOnly extends SequentialCommandGroup {
+public class AutoMoveCubeMPID extends SequentialCommandGroup {
     private Drivetrain m_drivetrain;
 
-    public AutoMoveOnly(Drivetrain drivetrain) {
+    public AutoMoveCubeMPID(Drivetrain drivetrain, Arm arm, Intake intake) {
         m_drivetrain = drivetrain;
 
-        setName("AutoMoveOnly");
-        addCommands(new DriveTime(2500, 0.3, drivetrain));
-        addCommands(new WaitCommand(1));
+        setName("AutoMoveCubeMPID");
+        addCommands(new AutoScore(2, false, arm, intake));
         addCommands(new DriveTime(3000, -0.3, drivetrain));
         
         // addCommands(new Turn(90, drivetrain));
