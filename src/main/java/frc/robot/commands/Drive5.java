@@ -1,17 +1,12 @@
 package frc.robot.commands;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.subsystems.Drivetrain;
 
 /*
@@ -29,29 +24,20 @@ public class Drive5 extends CommandBase {
     private GenericHID m_xbox;
 
     private final double followRange = 60;
-    private final double turnRange = 100;
+    private final double turnRange = 110;
+    private boolean backward = false;
 
-    private double kS=0.22, kV=2.91, kA=0;
-    private SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(kS, kV, kA);
-
-    private double kP=0.0001, kD=0;
-    private PIDController m_leftPID = new PIDController(kP, 0, kD);
-    private PIDController m_rightPID = new PIDController(kP, 0, kD);
-
-    private double kPg=0.022, kDg=0.000002;
-    private PIDController m_gyroPID = new PIDController(kPg, 0, kDg);
-
-    private SlewRateLimiter m_speedLimiter = new SlewRateLimiter(1.5);
+    
 
     private double x1error, y1error, x2error, gerror;
     
     Drivetrain m_drivetrain;
 
+    private SlewRateLimiter m_speedLimiter = new SlewRateLimiter(1.5);
+
     public Drive5(GenericHID xbox, Drivetrain drivetrain) {
         m_xbox = xbox;
         m_drivetrain = drivetrain;
-
-        m_gyroPID.enableContinuousInput(-180, 180);
 
         setName("Drive5");
         addRequirements(m_drivetrain);
@@ -80,9 +66,12 @@ public class Drive5 extends CommandBase {
 
         m_drivetrain.angle = angle;
 
-        double heading = (m_drivetrain.m_navX.getAngle()-gerror)%360;
-        if(heading>180){
-            heading-=360;
+        double heading = 0;
+        if(backward){
+            heading = MathUtil.inputModulus(m_drivetrain.m_navX.getAngle()-gerror+180, -180, 180);
+            speed*=-1;
+        }else{
+            heading = MathUtil.inputModulus(m_drivetrain.m_navX.getAngle()-gerror, -180, 180);
         }
 
         double difference = Math.abs(angle-heading);
@@ -90,21 +79,14 @@ public class Drive5 extends CommandBase {
             difference = 360-difference;
         }
 
-        if(m_xbox.getRawAxis(3)<0.5 && difference>turnRange){
-            speed*=-1;
-            if(angle<0) {
-                angle += 180;
-            }else if(angle>0){
-                angle-=180;
-            }
-
-            difference = Math.abs(angle-heading);
-            if(difference>=180){
-                difference = 360-difference;
-            }
+        if(difference>turnRange){
+            backward = !backward;
+        }
+        if(m_xbox.getRawAxis(3)>0.5){
+            backward = false;
         }
            
-        double correction = MathUtil.clamp(m_gyroPID.calculate(heading, angle), -0.5, 0.5);
+        double correction = MathUtil.clamp(m_drivetrain.m_gyroPID.calculate(heading, angle), -0.5, 0.5);
 
         if(m_xbox.getRawAxis(2)>0.5 || Math.abs(speed) < 0.05){
             correction = 0;
@@ -127,7 +109,7 @@ public class Drive5 extends CommandBase {
 
         if(Math.abs(speed)>0.05){
             if(difference>followRange){
-                v+=speed*Math.cos(difference);
+                v+=speed*Math.cos(Math.toRadians(difference));
                 omega+=correction;
             }else{
                 v+=speed;
@@ -137,11 +119,11 @@ public class Drive5 extends CommandBase {
 
         double x2 = getAxis(4, x2error);
         if(Math.abs(x2)>0.05){
-            omega+=0.5*x2;
+            omega+=0.7*x2;
         }
 
         if(m_xbox.getRawButton(5)){
-            v*=0.25;
+            v*=0.20;
             omega*=0.5;
         }
 
@@ -151,13 +133,12 @@ public class Drive5 extends CommandBase {
         if(power>1){
             v/=power;
             omega/=power;
-        }
+        } 
 
-        double l = 1.5*(v+omega);
-        double r = 1.5*(v-omega);
+        double l = 2.2*(v+omega);
+        double r = 2.2*(v-omega);
 
-        m_drivetrain.driveVoltage(m_feedforward.calculate(l)+m_leftPID.calculate(m_drivetrain.m_leftLeadEncoder.getVelocity(), l), 
-            m_feedforward.calculate(r)+m_rightPID.calculate(m_drivetrain.m_rightLeadEncoder.getVelocity(), r));
+        m_drivetrain.driveVoltage(l, r);
     }
 
     private double getAxis(int axis, double error){

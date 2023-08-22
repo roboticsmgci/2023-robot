@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 
 public class Arm extends SubsystemBase {
-    public double angle = 0;
+    private double error = 0;
 
     private final CANSparkMax m_motor = new CANSparkMax(6, MotorType.kBrushless);
 
@@ -20,7 +20,7 @@ public class Arm extends SubsystemBase {
 
     private SlewRateLimiter m_speedLimiter = new SlewRateLimiter(1);
 
-    
+    public double speed;    
 
     public Arm() {
 
@@ -33,8 +33,10 @@ public class Arm extends SubsystemBase {
 
         m_encoder.setPosition(0);
 
+        error = m_encoder.getPosition();
+
         // Set conversion ratios
-        //m_encoder.setPositionConversionFactor(0.0443);
+        m_encoder.setPositionConversionFactor(0.07279);
 
         setName("Arm");
     }
@@ -54,6 +56,22 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        
+        log();
+    }
+
+    public double getAngle(){
+        if(error==0){
+            error = m_encoder.getPosition();
+        }
+        return m_encoder.getPosition() - error;
+    }
+
+    public void reset(){
+        error = m_encoder.getPosition();
+    }
+
+    public void log() {
+        SmartDashboard.putNumber("arm", m_encoder.getPosition());
+        SmartDashboard.putNumber("arm2", getAngle());
     }
 }

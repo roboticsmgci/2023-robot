@@ -22,7 +22,7 @@ public class Climb extends CommandBase {
 
     @Override
     public void execute() {
-        m_drivetrain.drive(0.22, 0.22);
+        m_drivetrain.drive(0.5, 0.5);
     }
 
     @Override
