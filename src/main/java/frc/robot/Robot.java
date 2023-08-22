@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkMax.IdleMode;
+
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -30,6 +33,7 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
         /*CameraServer.startAutomaticCapture(0);
         CameraServer.startAutomaticCapture(1);*/ 
+        PortForwarder.add(8574, "wpilibpi.local", 8574);
     }
 
     /**
@@ -59,6 +63,8 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        
+        m_robotContainer.m_drivetrain.setBrakes(IdleMode.kBrake);
 
         // schedule the autonomous command (example)
         if (m_autonomousCommand != null) {
@@ -95,13 +101,15 @@ public class Robot extends TimedRobot {
     @Override
     public void testPeriodic() {}
 
-    /* 
-    /** This function is called once when the robot is first started up. 
+    /** This function is called once when the robot is first started up. */
     @Override
-    public void simulationInit() {}
+    public void simulationInit() {
+        m_robotContainer.m_drivetrain.simInit();
+    }
 
-    /** This function is called periodically whilst in simulation. 
+    /** This function is called periodically whilst in simulation. */
     @Override
-    public void simulationPeriodic() {}
-    */
+    public void simulationPeriodic() {
+        m_robotContainer.m_drivetrain.simUpdate();
+    }
 }
