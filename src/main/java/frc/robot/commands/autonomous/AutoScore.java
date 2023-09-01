@@ -14,7 +14,7 @@ public class AutoScore extends SequentialCommandGroup {
 
     public AutoScore(int level, boolean cone, Arm arm, Intake intake) {
 
-        addCommands(new ParallelRaceGroup(new IntakeDrive(()->true, ()->false, intake), new WaitCommand(0.3)));
+        addCommands(new ParallelRaceGroup(new IntakeDrive(()->true, ()->false, intake), new WaitCommand(0.5)));
         
         double armTarget = 0;
         if(level == 1){

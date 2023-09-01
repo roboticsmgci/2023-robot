@@ -97,7 +97,7 @@ public class Drivetrain extends SubsystemBase {
 
         // Inverts one side of the drivetrain
         m_rightLeadMotor.setInverted(true);
-        // m_leftFollowMotor.setInverted(true);
+         m_leftFollowMotor.setInverted(true);
 
         // Configures the motors to follow each other
         m_leftFollowMotor.follow(m_leftLeadMotor);
@@ -173,11 +173,11 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public double getYaw(){
-        return -(m_navX.getYaw()-m_yawError);
+        return (m_navX.getYaw()-m_yawError);
     }
 
-    public void setYawError(double e){
-        m_yawError = e;
+    public void resetGyro(){
+        m_yawError = m_navX.getAngle();
     }
 
     public double getAngle(){

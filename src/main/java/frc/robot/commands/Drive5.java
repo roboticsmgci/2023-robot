@@ -55,7 +55,7 @@ public class Drive5 extends CommandBase {
         // SmartDashboard.putNumber("kPg", kPg);
         // SmartDashboard.putNumber("kIg", kIg);
         // SmartDashboard.putNumber("kDg", kD);
-        gerror = m_drivetrain.m_navX.getAngle();
+        m_drivetrain.resetGyro();
     }
 
     @Override
@@ -86,7 +86,7 @@ public class Drive5 extends CommandBase {
         // }
 
         if(m_xbox.getRawButton(5)&&m_xbox.getRawButton(6)){
-            m_drivetrain.setYawError(m_drivetrain.m_navX.getAngle()%360);
+            m_drivetrain.resetGyro();
             // gerror = m_drivetrain.m_navX.getAngle()%360;
         }
 
