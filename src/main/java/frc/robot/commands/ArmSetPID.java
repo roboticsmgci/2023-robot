@@ -15,9 +15,9 @@ public class ArmSetPID extends CommandBase {
     private double m_time;
     private boolean stop=true;
 
-    private final double kp = 0.65;
+    private final double kp = 0.55;
     private final double ki = 0.0;
-    private final double kd = 0.0;
+    private final double kd = 0.001;
     private final double error = 0.05;
     private final double errorD = 5;
 
@@ -46,7 +46,7 @@ public class ArmSetPID extends CommandBase {
 
     @Override
     public void execute() {
-        double speed = MathUtil.clamp(pid.calculate(m_arm.m_encoder.getPosition()), -0.17, 0.17)+0.05;
+        double speed = MathUtil.clamp(pid.calculate(m_arm.m_encoder.getPosition()), -0.17, 0.5)+0.1;
         m_arm.setMotor(speed);
         m_time+=20;
     }

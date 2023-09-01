@@ -36,7 +36,7 @@ public class Arm extends SubsystemBase {
         error = m_encoder.getPosition();
 
         // Set conversion ratios
-        m_encoder.setPositionConversionFactor(0.07279);
+        //m_encoder.setPositionConversionFactor(0.07279);
 
         setName("Arm");
     }
@@ -56,7 +56,7 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        log();
+        //log();
     }
 
     public double getAngle(){

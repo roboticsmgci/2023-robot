@@ -66,7 +66,7 @@ public class RobotContainer {
         // Configure the trigger bindings
         configureBindings();
 
-        CameraServer.startAutomaticCapture();
+        //CameraServer.startAutomaticCapture();
 
         m_chooser.addOption("Auto nothing", new AutoNothing(m_drivetrain));
         m_chooser.addOption("Auto only move forward", new AutoMoveOnce(m_drivetrain));
@@ -85,6 +85,7 @@ public class RobotContainer {
         m_drivetrain.setDefaultCommand(
             //new ADrive(m_stick1, m_drivetrain)
             new Drive5(m_stick1, m_drivetrain)
+            //new Drive5Sim(m_stick1, m_drivetrain)
         );
 
         m_arm.setDefaultCommand(
@@ -276,7 +277,7 @@ public class RobotContainer {
         // // Run path following command, then stop at the end.
         // return ramseteCommand.andThen(() -> m_robotDrive.tankDriveVolts(0, 0));
         // // An example command will be run in autonomous
-        // //return m_chooser.getSelected();
-        return null;
+        return m_chooser.getSelected();
+        
     }
 }

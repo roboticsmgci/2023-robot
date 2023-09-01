@@ -48,7 +48,7 @@ public class Drivetrain extends SubsystemBase {
     private final DifferentialDrive m_robotDrive = new DifferentialDrive(m_leftLeadMotor, m_rightLeadMotor);
     private double m_pitchError, m_yawError;
     // Gyro
-    public AHRS m_navX = new AHRS(SerialPort.Port.kUSB1);
+    public AHRS m_navX = new AHRS(SerialPort.Port.kUSB);
 
     // Encoders
     public RelativeEncoder m_leftLeadEncoder = m_leftLeadMotor.getEncoder();
@@ -63,8 +63,9 @@ public class Drivetrain extends SubsystemBase {
     public PIDController m_leftPID = new PIDController(kP, 0, kD);
     public PIDController m_rightPID = new PIDController(kP, 0, kD);
 
-    private double kPg=0.018, kDg=0.000002;
+    private double kPg=0.015, kDg=0.000002;
     public PIDController m_gyroPID = new PIDController(kPg, 0, kDg);
+    public PIDController m_gyroPID2 = new PIDController(0.008, 0, 0);
 
     public DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackWidth);
 
@@ -131,8 +132,8 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void driveVoltage(double l, double r) {
-        l=m_feedforward.calculate(l)+m_leftPID.calculate(m_leftLeadEncoder.getVelocity(), l);
-        r=m_feedforward.calculate(r)+m_rightPID.calculate(m_rightLeadEncoder.getVelocity(), r);
+        l=m_feedforward.calculate(l);//+m_leftPID.calculate(m_leftLeadEncoder.getVelocity(), l);
+        r=m_feedforward.calculate(r);//+m_rightPID.calculate(m_rightLeadEncoder.getVelocity(), r);
 
         m_leftLeadMotor.setVoltage(l);
         m_rightLeadMotor.setVoltage(r);
@@ -143,12 +144,13 @@ public class Drivetrain extends SubsystemBase {
      */
     public void log() {
         SmartDashboard.putNumber("Gyro", m_navX.getYaw());
+        SmartDashboard.putNumber("angle", getYaw());
         SmartDashboard.putNumber("target Angle", angle);
-        SmartDashboard.putNumber("Pitch", getPitch());
+        //SmartDashboard.putNumber("Pitch", getPitch());
 
         // SmartDashboard.putNumber("target", angle);
-        SmartDashboard.putNumber("l1", m_leftLeadEncoder.getPosition()); // encoders
-        SmartDashboard.putNumber("l2", m_rightLeadEncoder.getPosition());
+        //SmartDashboard.putNumber("l1", m_leftLeadEncoder.getPosition()); // encoders
+        //SmartDashboard.putNumber("l2", m_rightLeadEncoder.getPosition());
     }
 
     @Override
@@ -168,6 +170,14 @@ public class Drivetrain extends SubsystemBase {
 
     public double getPitch(){
         return -(m_navX.getPitch()-m_pitchError);
+    }
+
+    public double getYaw(){
+        return -(m_navX.getYaw()-m_yawError);
+    }
+
+    public void setYawError(double e){
+        m_yawError = e;
     }
 
     public double getAngle(){

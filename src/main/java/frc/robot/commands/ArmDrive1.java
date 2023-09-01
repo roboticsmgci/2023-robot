@@ -12,8 +12,7 @@ public class ArmDrive1 extends CommandBase {
     private GenericHID m_xbox;
     private double axisError;
     private final Arm m_arm;
-    private final PIDController m_posPID = new PIDController(0.4, 0, 0);
-    private final PIDController m_vPID = new PIDController(0.005, 0, 0);
+    private final PIDController m_posPID = new PIDController(0.5, 0, 0.001);
 
     public ArmDrive1(GenericHID xbox, Arm arm) {
         m_xbox = xbox;
@@ -39,15 +38,15 @@ public class ArmDrive1 extends CommandBase {
         }
 
         if(m_xbox.getRawButton(4)){
-            target = 1.3;
-            correction = MathUtil.clamp(m_posPID.calculate(angle, target), -0.17, 0.17)+0.05;
+            target = 1.2;
+            correction = MathUtil.clamp(m_posPID.calculate(angle, target), -0.17, 0.4)+0.3;
         }else if(m_xbox.getRawButton(3)){
-            target = 1.0;
-            correction = MathUtil.clamp(m_posPID.calculate(angle, target), -0.17, 0.17)+0.05;
+            target = 0.8;
+            correction = MathUtil.clamp(m_posPID.calculate(angle, target), -0.17, 0.5)+0.1;
         }
         else if(m_xbox.getRawButton(1)){
             target = 0;
-            correction = MathUtil.clamp(m_posPID.calculate(angle, target), -0.17, 0.17)+0.05;
+            correction = MathUtil.clamp(m_posPID.calculate(angle, target), -0.17, 0.5);
         }
         
         if(Math.abs(getAxis(1, axisError)) > 0.1){

@@ -27,11 +27,7 @@ public class Drive5 extends CommandBase {
     private final double turnRange = 110;
     private boolean backward = false;
 
-    
-
     private double x1error, y1error, x2error, gerror;
-    private double lastEncoderValue;
-    private boolean isStill;
     
     Drivetrain m_drivetrain;
 
@@ -60,8 +56,6 @@ public class Drive5 extends CommandBase {
         // SmartDashboard.putNumber("kIg", kIg);
         // SmartDashboard.putNumber("kDg", kD);
         gerror = m_drivetrain.m_navX.getAngle();
-        lastEncoderValue = m_drivetrain.m_leftLeadEncoder.getPosition();
-        isStill = false;
     }
 
     @Override
@@ -92,7 +86,8 @@ public class Drive5 extends CommandBase {
         // }
 
         if(m_xbox.getRawButton(5)&&m_xbox.getRawButton(6)){
-            gerror = m_drivetrain.m_navX.getAngle();
+            m_drivetrain.setYawError(m_drivetrain.m_navX.getAngle()%360);
+            // gerror = m_drivetrain.m_navX.getAngle()%360;
         }
 
         double x = getAxis(0, x1error);
@@ -106,10 +101,10 @@ public class Drive5 extends CommandBase {
 
         double heading = 0;
         if(backward){
-            heading = MathUtil.inputModulus(m_drivetrain.m_navX.getAngle()-gerror+180, -180, 180);
+            heading = MathUtil.inputModulus(m_drivetrain.getYaw()+180, -180, 180);
             speed*=-1;
         }else{
-            heading = MathUtil.inputModulus(m_drivetrain.m_navX.getAngle()-gerror, -180, 180);
+            heading = MathUtil.inputModulus(m_drivetrain.getYaw(), -180, 180);
         }
 
         double difference = Math.abs(angle-heading);
@@ -123,8 +118,18 @@ public class Drive5 extends CommandBase {
         if(m_xbox.getRawAxis(3)>0.5){
             backward = false;
         }
+
+        double correction;
+
+        if(m_xbox.getRawButton(5)){
+            correction = MathUtil.clamp(m_drivetrain.m_gyroPID.calculate(heading, angle), -0.5, 0.5);
+            m_drivetrain.m_gyroPID2.calculate(heading, angle);
+        }else{
+            correction = MathUtil.clamp(m_drivetrain.m_gyroPID2.calculate(heading, angle), -0.5, 0.5);
+            m_drivetrain.m_gyroPID.calculate(heading, angle);
+        }
            
-        double correction = MathUtil.clamp(m_drivetrain.m_gyroPID.calculate(heading, angle), -0.5, 0.5);
+        
 
         if(m_xbox.getRawAxis(2)>0.5 || Math.abs(speed) < 0.05){
             correction = 0;
@@ -173,8 +178,8 @@ public class Drive5 extends CommandBase {
             omega/=power;
         } 
 
-        double l = 2.2*(v+omega);
-        double r = 2.2*(v-omega);
+        double l = 2.4*(v+omega);
+        double r = 2.4*(v-omega);
 
         m_drivetrain.driveVoltage(l, r);
     }

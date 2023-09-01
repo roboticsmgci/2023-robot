@@ -22,7 +22,7 @@ public class AutoScore extends SequentialCommandGroup {
         }else if(level == 2){
             armTarget = 0.8;
         }else if(level == 3){
-            armTarget = 1.1;
+            armTarget = 1.2;
         }
         addCommands(new ArmSetPID(armTarget, 3000, arm));
         addCommands(new ParallelRaceGroup(new ArmSetPID(armTarget, -2000, arm), new IntakeDrive(()-> cone, ()->!cone, intake)));
