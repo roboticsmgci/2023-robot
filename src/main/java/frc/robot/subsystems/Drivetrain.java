@@ -63,7 +63,7 @@ public class Drivetrain extends SubsystemBase {
     public PIDController m_leftPID = new PIDController(kP, 0, kD);
     public PIDController m_rightPID = new PIDController(kP, 0, kD);
 
-    private double kPg=0.018, kDg=0.000002;
+    private double kPg=0.018, kDg=0.001;
     public PIDController m_gyroPID = new PIDController(kPg, 0, kDg);
 
     public DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackWidth);
