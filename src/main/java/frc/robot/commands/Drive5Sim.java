@@ -31,7 +31,7 @@ public class Drive5Sim extends CommandBase {
     private final double kPg=0.008, kDg=0.000002;
     private final PIDController m_gyroPID = new PIDController(kPg, 0, kDg);
 
-    private final SlewRateLimiter m_speedLimiter = new SlewRateLimiter(1.9);
+    private final SlewRateLimiter m_speedLimiter = new SlewRateLimiter(1.5);
 
     private double x1error, y1error, x2error, gerror;
     
@@ -52,30 +52,32 @@ Drivetrain m_drivetrain;
         x1error = m_xbox.getRawAxis(0);
         y1error = m_xbox.getRawAxis(1);
         x2error = m_xbox.getRawAxis(4);
-        gerror = m_drivetrain.m_navX.getAngle();
+        //gerror = m_drivetrain.m_navX.getAngle();
+        m_drivetrain.resetGyro();
     }
 
     @Override
     public void execute() {
         if(m_xbox.getRawButton(5)&&m_xbox.getRawButton(6)){
-            gerror = m_drivetrain.m_navX.getAngle()%360;
+            m_drivetrain.resetGyro();
+            // gerror = m_drivetrain.m_navX.getAngle()%360;
         }
 
         double x = getAxis(0, x1error);
-        double y = getAxis(1, y1error);
-        double speed = (0.9*Math.max(Math.abs(x), Math.abs(y)));//Math.min(1, Math.hypot(m_xbox.getRawAxis(0), m_xbox.getRawAxis(1)));//filter.calculate(0.9*Math.min(1, m_xbox.getMagnitude()));//Math.hypot(x, y)
+        double y = -getAxis(1, y1error);
+        double speed = Math.max(Math.abs(x), Math.abs(y));
 
         // Angle between the y-axis and the direction the stick is pointed
-        double angle = Math.toDegrees(Math.atan2(x, -y));//Math.atan(x, -y)
+        double angle = Math.toDegrees(Math.atan2(x, y));//Math.atan(x, -y)
 
         m_drivetrain.angle = angle;
 
         double heading = 0;
         if(backward){
-            heading = MathUtil.inputModulus(m_drivetrain.m_navX.getAngle()-gerror+180, -180, 180);
+            heading = MathUtil.inputModulus(m_drivetrain.getYaw()+180, -180, 180);
             speed*=-1;
         }else{
-            heading = MathUtil.inputModulus(m_drivetrain.m_navX.getAngle()-gerror, -180, 180);
+            heading = MathUtil.inputModulus(m_drivetrain.getYaw(), -180, 180);
         }
 
         double difference = Math.abs(angle-heading);
@@ -89,12 +91,10 @@ Drivetrain m_drivetrain;
         if(m_xbox.getRawAxis(3)>0.5){
             backward = false;
         }
-           
-        double correction = MathUtil.clamp(m_gyroPID.calculate(heading, angle), -0.5, 0.5);
 
-        if(m_xbox.getRawAxis(2)>0.5 || Math.abs(speed) < 0.05){
-            correction = 0;
-        }
+        double correction;
+
+        correction = MathUtil.clamp(m_drivetrain.m_gyroPID.calculate(heading, angle), -0.5, 0.5);
 
         double v=0, omega=0;
         
@@ -111,24 +111,34 @@ Drivetrain m_drivetrain;
             omega-=0.15;
         }
 
+        if(m_xbox.getRawAxis(2)>0.8){
+            correction = 0;
+        }
+
         if(Math.abs(speed)>0.05){
-            if(difference>followRange){
-                v+=speed*Math.cos(Math.toRadians(difference));
+            v+=speed*Math.cos(Math.toRadians(difference));
                 omega+=correction;
-            }else{
-                v+=speed;
-                omega+=correction;
-            }
+            // if(difference>followRange){
+            //     v+=speed*Math.cos(Math.toRadians(difference));
+            //     omega+=correction;
+            // }else{
+            //     v+=speed;
+            //     omega+=correction;
+            // }
         }
 
         double x2 = getAxis(4, x2error);
         if(Math.abs(x2)>0.05){
-            omega+=0.5*x2;
+            omega+=0.7*x2;
+        }
+
+        if(m_xbox.getRawAxis(2)>0.8){
+            v=Math.signum(y);
         }
 
         if(m_xbox.getRawButton(5)){
-            v*=0.25;
-            omega*=0.25;
+            v*=0.20;
+            omega*=0.5;
         }
 
         v = m_speedLimiter.calculate(v);
@@ -139,11 +149,13 @@ Drivetrain m_drivetrain;
             omega/=power;
         } 
 
-        double l = 1.0*(v+omega);
-        double r = 1.0*(v-omega);
+        double l = 2.4*(v+omega);
+        double r = 2.4*(v-omega);
 
-        m_drivetrain.drive(m_feedforward.calculate(l)+m_leftPID.calculate(m_drivetrain.m_leftLeadEncoder.getVelocity(), l), 
-            m_feedforward.calculate(r)+m_rightPID.calculate(m_drivetrain.m_rightLeadEncoder.getVelocity(), r));
+        // m_drivetrain.drive(m_feedforward.calculate(l)+m_leftPID.calculate(m_drivetrain.m_leftLeadEncoder.getVelocity(), l), 
+        //     m_feedforward.calculate(r)+m_rightPID.calculate(m_drivetrain.m_rightLeadEncoder.getVelocity(), r));
+        m_drivetrain.drive(m_feedforward.calculate(l), 
+            m_feedforward.calculate(r));
     }
 
     private double getAxis(int axis, double error){

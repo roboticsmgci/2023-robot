@@ -84,8 +84,8 @@ public class RobotContainer {
 
         m_drivetrain.setDefaultCommand(
             //new ADrive(m_stick1, m_drivetrain)
-            new Drive5(m_stick1, m_drivetrain)
-            //new Drive5Sim(m_stick1, m_drivetrain)
+            //new Drive5(m_stick1, m_drivetrain)
+            new Drive5Sim(m_stick1, m_drivetrain)
         );
 
         m_arm.setDefaultCommand(

@@ -19,6 +19,9 @@
   "NetworkTables": {
     "transitory": {
       "SmartDashboard": {
+        "Field": {
+          "open": true
+        },
         "SendableChooser[0]": {
           "open": true
         },

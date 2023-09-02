@@ -63,7 +63,7 @@ public class Drivetrain extends SubsystemBase {
     public PIDController m_leftPID = new PIDController(kP, 0, kD);
     public PIDController m_rightPID = new PIDController(kP, 0, kD);
 
-    private double kPg=0.015, kDg=0.000002;
+    private double kPg=0.008, kDg=0.000002;
     public PIDController m_gyroPID = new PIDController(kPg, 0, kDg);
     public PIDController m_gyroPID2 = new PIDController(0.008, 0, 0);
 
@@ -97,7 +97,7 @@ public class Drivetrain extends SubsystemBase {
 
         // Inverts one side of the drivetrain
         m_rightLeadMotor.setInverted(true);
-         m_leftFollowMotor.setInverted(true);
+        m_leftFollowMotor.setInverted(true);
 
         // Configures the motors to follow each other
         m_leftFollowMotor.follow(m_leftLeadMotor);
@@ -149,8 +149,8 @@ public class Drivetrain extends SubsystemBase {
         //SmartDashboard.putNumber("Pitch", getPitch());
 
         // SmartDashboard.putNumber("target", angle);
-        //SmartDashboard.putNumber("l1", m_leftLeadEncoder.getPosition()); // encoders
-        //SmartDashboard.putNumber("l2", m_rightLeadEncoder.getPosition());
+        SmartDashboard.putNumber("l1", m_leftLeadEncoder.getVelocity()); // encoders
+        SmartDashboard.putNumber("l2", m_rightLeadEncoder.getVelocity());
     }
 
     @Override
